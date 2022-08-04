@@ -33,7 +33,7 @@ All routes are protected except for creating a resource(user) route
 5. Delete manager route `/manager/<id>`. Method = `DELETE`
 6. Update a manager route `/manager/<id>`. Method = `PATCH`
 ## Admin
-![user](/screenshot/admin.png)
+![user](/screenshot/postadmin.png)
 1. The base route is `/`
 2. Post a admin route `/admin`. Method = `POST`
 3. Get all admins route `/admin`. Method = `GET`
