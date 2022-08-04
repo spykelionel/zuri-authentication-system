@@ -1,15 +1,18 @@
-const Todo = require("../models/Todo");
+const Admin = require("../models/Admin");
+const bcrypt = require('bcrypt')
 
 module.exports = {
   create: async (req, res) => {
-    Todo?.exists({ title: req.body.title })
+    Admin?.exists({ email: req.body.email })
       .then(async (result) => {
         if (!result) {
           try {
-            const todo = new Todo({
-                ...req.body,
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(req.body.password, salt);
+            const admin = new Admin({
+                ...req.body, password: hashedPassword
               });
-              await todo
+              await admin
                 .save()
                 .then((result) => {
                   return res.status(201).send(result);
@@ -22,7 +25,7 @@ module.exports = {
           }
         } else {
           res.status(409).json({
-            message: "Title already Exist",
+            message: "Admin already Exist",
           });
         }
       })
@@ -30,7 +33,7 @@ module.exports = {
   },
 
   getAll: async (req, res, next) => {
-    await Todo.find({})
+    await Admin.find({})
       .lean()
       .then((result) => res.status(200).send(result))
       .catch((err) => res.status(503).send(err));
@@ -38,14 +41,14 @@ module.exports = {
 
   getOne: async (req, res) => {
     try {
-      await Todo.findOne({ _id: req.params.id })
+      await Admin.findOne({ _id: req.params.id })
         .lean()
         .then((result) => {
           if (result) {
             return res.status(200).json({ ...result });
           }
           return res.status(404).json({
-            message: "Todo Not found",
+            message: "Admin Not found",
           });
         })
         .catch((err) => {
@@ -57,20 +60,20 @@ module.exports = {
     } catch (error) {
       res.status(501).json({
         ...error,
-        info: "Server Error. Error getting the Todo",
+        info: "Server Error. Error getting the Admin",
       });
       throw new Error(error);
     }
   },
 
   deleteOne: async (req, res) => {
-    await Todo.deleteOne({ _id: req.params.id })
+    await Admin.deleteOne({ _id: req.params.id })
       .then((result) => {
         if (result.deletedCount == 1) {
            return res.status(200).send(result);   
         }
         res.status(404).json({
-          message: "Todo Not found",
+          message: "Admin Not found",
         });
       }) 
       .catch((err) =>
@@ -82,11 +85,11 @@ module.exports = {
   },
 
   update: async (req, res) => {
-    Todo?.exists({ _id: req.params.id })
+    Admin?.exists({ _id: req.params.id })
       .then(async (result) => {
         if (result) {
           try {
-            await Todo.updateOne(
+            await Admin.updateOne(
               { _id: req.params.id },
               {
                 $set: req.body,
@@ -95,7 +98,7 @@ module.exports = {
               .then((result) =>
                 res.status(201).send({
                   ...result,
-                  info: "successfully updated Todo",
+                  info: "successfully updated Admin",
                 })
               )
               .catch((err) => res.status(409).send(err));
@@ -104,10 +107,11 @@ module.exports = {
           }
         } else {
           res.status(404).json({
-            info: { message: "Todo not found.", valid: false },
+            info: { message: "Admin not found.", valid: false },
           });
         }
       })
       .catch((err) => console.error(err));
   },
+  login: require('../auth/auth').adminLogin
 };
