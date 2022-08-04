@@ -7,12 +7,11 @@ const port = process.env.PORT || 3000
 
 const server = http.createServer(app)
 
-const uri = process.env.HOST || `mongodb://localhost:27017`;
+const uri = process.env.HOST || `mongodb://localhost:27017/zuri-auth`;
 mongoose.connect(uri, {useUnifiedTopology: true, useNewUrlParser: true}, (err)=>{
     if(err){
         console.log("Couldn't connnect mongodb")
         console.error(err?.stack)
-        
     } else {
         console.log("Connected successsfully to mongodb")
     }
