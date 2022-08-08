@@ -113,5 +113,6 @@ module.exports = {
       })
       .catch((err) => console.error(err));
   },
-  login: require('../auth/auth').adminLogin
+  login: require('../auth/auth').adminLogin,
+  logout: require('../auth/auth').logout
 };

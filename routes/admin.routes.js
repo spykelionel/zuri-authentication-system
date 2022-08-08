@@ -9,5 +9,6 @@ router
   .post("/", admin.create)
   .patch("/:id", verifyAdmin, admin.update)
   .delete("/:id", verifyAdmin, admin.deleteOne)
+  .get('/logout', admin.logout)
 
 module.exports = router;

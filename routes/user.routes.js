@@ -10,5 +10,6 @@ router
   .post("/login", user.login)
   .patch("/:id", verifyUser, user.update)
   .delete("/:id", verifyUser, user.deleteOne)
+  .get('/logout', user.logout)
 
 module.exports = router;
