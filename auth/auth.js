@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
+const {verify} = require('jsonwebtoken')
 const Staff = require("../models/Staff");
 const Manager = require("../models/Manager");
 const Admin = require("../models/Admin");
@@ -124,3 +125,29 @@ exports.adminLogin = async (req, res) => {
       }
     });
   };
+exports.logout =  async (req, res, next) => {
+	try {
+// provided the token was stored this way during login.
+		const authHeader = req.headers["authorization"]
+		const token = authHeader?.split(" ")[1]
+		let reason = ""
+		if (token == null) return res.sendStatus(401)
+
+		verify(token, process.env.JWT_SECRET, (err, user) => {
+			if (err) return res.sendStatus(403)
+			if (user) {
+				reason = "Manually revoked"
+			} else {
+				reason = "Token expired"
+			}
+		})
+		req.headers["authorization"] = ""
+		res.status(200).json({
+			message: "You are now logged out",
+			token,
+			reason
+		})
+	} catch (e) {
+		next(e)
+	}
+}
